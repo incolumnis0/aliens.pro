@@ -56,17 +56,17 @@ const URL_WINDOW = [
 ]
 
 const VIDEOS = [
-  '/img/alien-videos.gif',
-  '/img/aliencatas.mp4',
-  '/img/hay-bob.mp4'
+  './img/alien-videos.gif',
+  './img/aliencatas.mp4',
+  './img/hay-bob.mp4'
 ]
 
 const FILE_DOWNLOADS = [
-  '/img/alien-cat.png',
-  '/img/aliens.jpg',
-  '/img/blackaliens.jpg',
-  '/img/dancing-green-alien.jpg',
-  '/img/arrive.jpg'
+  './img/alien-cat.png',
+  './img/aliens.jpg',
+  './img/blackaliens.jpg',
+  './img/dancing-green-alien.jpg',
+  './img/arrive.jpg'
 ]
 
 const PHRASES = [
@@ -847,7 +847,7 @@ function onCloseWindow (win) {
  * Show the unsuspecting user a friendly hello message with a cat.
  */
 function showHelloMessage () {
-  const template = document.querySelector('template')
+  const template = document.querySelector('section')
   const clone = document.importNode(template.content, true)
   document.body.appendChild(clone)
 }
